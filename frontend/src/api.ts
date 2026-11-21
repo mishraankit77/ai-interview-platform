@@ -393,9 +393,10 @@ export const submitAnswer = async (
     suggestedAnswer: `Benchmark Standard: In production, top candidates explain: 1) The exact mechanism (${currQ.expectedTopics.join(' & ')}), 2) Performance implications (time & space complexity), and 3) Practical failure recovery.`
   };
 
-  // Next question logic
+  // Next question logic (DYNAMIC & ADAPTIVE)
   const nextIdx = currentSession.currentQuestionIndex + 1;
-  const isComplete = nextIdx >= currentSession.questions.length;
+  const MAX_TURNS = 3;
+  const isComplete = nextIdx >= MAX_TURNS;
 
   if (isComplete) {
     currentSession.status = 'completed';
@@ -441,8 +442,50 @@ export const submitAnswer = async (
       report
     };
   } else {
+    // Generate ADAPTIVE follow-up question based on the situation and candidate's answer
+    const clean = (answer || '').toLowerCase();
+    let adaptiveText = '';
+    const roundType = currentSession.roundType;
+
+    if (roundType === 'coding_test') {
+      if (clean.includes('map') || clean.includes('hash') || clean.includes('capacity')) {
+        adaptiveText = `Looking at your solution: You used a hash map to maintain O(1) key lookups. What happens if multiple concurrent requests write to this cache simultaneously? How would you implement thread safety or handle cache stampedes if a high-traffic key expires?`;
+      } else {
+        adaptiveText = `Regarding your implementation: What is the exact worst-case time complexity when the cache reaches full capacity and triggers an eviction? How would you benchmark this to prove to an engineering team that it won't cause event-loop lag?`;
+      }
+    } else if (roundType === 'technical') {
+      if (clean.includes('redis') || clean.includes('cache') || clean.includes('token')) {
+        adaptiveText = `You mentioned caching and memory storage. In a distributed microservice setup where multiple Node instances share a centralized Redis cache, what happens if the network between Node and Redis experiences a 500ms latency spike? Walk me through how you would prevent cascading service failures.`;
+      } else if (clean.includes('mongo') || clean.includes('index') || clean.includes('query')) {
+        adaptiveText = `You touched on database indexing and storage. Suppose an index scan (IXSCAN) query on your primary collection spikes CPU utilization to 98% during peak hours. How would you capture the profiling data in real-time, determine if index fragmentation is an issue, and resolve it without taking down the production database?`;
+      } else if (clean.includes('react') || clean.includes('state') || clean.includes('hook') || clean.includes('render')) {
+        adaptiveText = `In your answer you discussed component re-renders and state management. What are the specific architectural downsides of overusing useCallback and useMemo across a large enterprise codebase? When does closure allocation cost more than the re-render itself?`;
+      } else {
+        const gap = evaluation.weaknesses[0] || 'low-level failure recovery';
+        adaptiveText = `Based on what you just outlined, you focused primarily on the expected happy path. In production systems, what happens when ${gap.toLowerCase()} occurs? Walk me through your concrete architectural recovery plan.`;
+      }
+    } else if (roundType === 'hr') {
+      if (clean.includes('team') || clean.includes('deadline') || clean.includes('client')) {
+        adaptiveText = `You mentioned collaborating with team members during that project. When priorities conflicted between what you were developing and what another engineer was working on, how did you resolve the disagreement without escalating to management?`;
+      } else {
+        adaptiveText = `In that scenario you described, if you had 50% less time to deliver the project than originally budgeted, what specific features or quality checks would you have negotiated to cut, and what would you never compromise on?`;
+      }
+    } else {
+      adaptiveText = `Following up on your decision framework: If your leadership asks you to push a critical release on a Friday afternoon right before a major marketing campaign, but automated test coverage is sitting at 60%, what is your exact go/no-go criteria?`;
+    }
+
+    const nextQ: Question = {
+      id: `q-adapt-${Date.now()}`,
+      text: adaptiveText,
+      roundType,
+      expectedTopics: evaluation.weaknesses.slice(0, 3),
+      difficulty: evaluation.score > 75 ? 'senior' : 'junior',
+      category: 'Adaptive Technical Deep-Dive',
+      timeLimitSeconds: 180
+    };
+
+    currentSession.questions.push(nextQ);
     currentSession.currentQuestionIndex = nextIdx;
-    const nextQ = currentSession.questions[nextIdx];
     localStorage.setItem('active_session_' + sessionId, JSON.stringify(currentSession));
 
     return {

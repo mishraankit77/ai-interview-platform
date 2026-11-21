@@ -6,11 +6,12 @@ import {
   Message, 
   Question, 
   TurnEvaluation, 
-  InterviewReport,
-  OverallMetrics
+  InterviewReport
 } from '../types';
 import { llmService } from '../services/llmService';
 import { sessionStore } from '../services/sessionStore';
+
+const MAX_QUESTIONS_PER_ROUND = 3;
 
 export class InterviewOrchestrator {
   public async createSession(
@@ -21,27 +22,8 @@ export class InterviewOrchestrator {
   ): Promise<InterviewSession> {
     const sessionId = uuidv4();
 
-    // Fetch questions bank for this specific round
-    let questions = llmService.getQuestionsForRound(roundType, role);
-
-    // If it's a coding test, attach coding challenge
-    if (roundType === 'coding_test') {
-      const challenge = llmService.getCodingChallenge(role);
-      questions = [
-        {
-          id: `q-coding-${challenge.id}`,
-          text: challenge.title + ' — ' + challenge.description,
-          roundType: 'coding_test',
-          expectedTopics: [challenge.optimalTimeComplexity, challenge.optimalSpaceComplexity],
-          difficulty: 'junior',
-          category: 'Coding & Algorithms',
-          timeLimitSeconds: challenge.timeLimitSeconds,
-          codingChallenge: challenge
-        }
-      ];
-    }
-
-    const firstQuestion = questions[0];
+    // Generate dynamic initial question tailored to the round and role
+    const initialQuestion = llmService.getInitialQuestion(roundType, role);
 
     const initialMessages: Message[] = [
       {
@@ -54,7 +36,7 @@ export class InterviewOrchestrator {
       {
         id: uuidv4(),
         sender: 'interviewer',
-        content: firstQuestion.text,
+        content: initialQuestion.text,
         timestamp: new Date().toISOString(),
         agentRole: 'Interviewer'
       }
@@ -67,7 +49,7 @@ export class InterviewOrchestrator {
       roundType,
       experienceYears,
       currentQuestionIndex: 0,
-      questions,
+      questions: [initialQuestion],
       messages: initialMessages,
       metrics: {
         averageScore: 0,
@@ -136,16 +118,24 @@ export class InterviewOrchestrator {
     session.metrics.problemSolvingScore = Math.round(evaluatedTurns.reduce((acc, t) => acc + (t.evaluation?.problemSolving || 0), 0) / n);
     session.metrics.depthScore = Math.round(evaluatedTurns.reduce((acc, t) => acc + (t.evaluation?.depthOfKnowledge || 0), 0) / n);
 
-    // Check if more questions remain
-    const nextIndex = session.currentQuestionIndex + 1;
-    if (nextIndex < session.questions.length) {
-      session.currentQuestionIndex = nextIndex;
-      const nextQ = session.questions[nextIndex];
+    // DYNAMIC & ADAPTIVE NEXT QUESTION FORMULATION
+    // Check if more questions should be asked
+    const totalAsked = session.questions.length;
+    if (totalAsked < MAX_QUESTIONS_PER_ROUND) {
+      // Formulate ADAPTIVE next question based on the situation and candidate's answer!
+      const adaptiveNextQ = await llmService.generateAdaptiveQuestion(
+        session,
+        candidateAnswer,
+        evaluation
+      );
+
+      session.questions.push(adaptiveNextQ);
+      session.currentQuestionIndex = totalAsked;
 
       const interviewerMsg: Message = {
         id: uuidv4(),
         sender: 'interviewer',
-        content: nextQ.text,
+        content: adaptiveNextQ.text,
         timestamp: new Date().toISOString(),
         agentRole: 'Interviewer'
       };
@@ -155,11 +145,11 @@ export class InterviewOrchestrator {
       return {
         session,
         evaluation,
-        nextQuestion: nextQ,
+        nextQuestion: adaptiveNextQ,
         isComplete: false
       };
     } else {
-      // Completed round! Generate Report
+      // Completed round! Generate Final Executive Audit Report
       session.status = 'completed';
       const report = llmService.generateFinalReport(session);
       session.report = report;
