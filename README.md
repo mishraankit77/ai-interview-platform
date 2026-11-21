@@ -62,26 +62,22 @@ Press `Ctrl + Shift + B` and select **`Run Entire Project (Backend + Frontend)`*
 
 ---
 
-## 🌐 Production Deployment
+## 🌐 Production 1-Click Deployment
+
+| Service | Tier | Deploy Action |
+|:---|:---|:---|
+| **Frontend (Vercel)** | 100% Free Forever | [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmishraankit77%2Fai-interview-platform&root-directory=frontend) |
+| **Backend (Render)** | Free Tier Web Service | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/mishraankit77/ai-interview-platform) |
 
 ### Frontend (Vercel)
-1. Import the repository in [Vercel](https://vercel.com).
+1. Click the **Deploy with Vercel** button above or import `mishraankit77/ai-interview-platform` at [vercel.com](https://vercel.com).
 2. Set **Root Directory** to `frontend`.
-3. Set Environment Variable:
-   - `VITE_API_BASE_URL`: `https://your-backend-service.onrender.com/api`
-4. Deploy!
+3. Add environment variable: `VITE_API_BASE_URL` = `https://your-backend.onrender.com/api`.
 
-### Backend (Render / Railway)
-1. Create a new Web Service on [Render](https://render.com).
-2. Connect this repository and set **Root Directory** to `backend`.
-3. Set:
-   - **Build Command**: `npm install && npm run build`
-   - **Start Command**: `npm start`
-   - **Health Check Path**: `/health`
-4. Set Environment Variables:
-   - `NODE_ENV`: `production`
-   - `PORT`: `10000`
-   - `FRONTEND_URL`: `https://your-vercel-domain.vercel.app`
+### Backend (Render)
+1. Click the **Deploy to Render** button above or connect your GitHub repo at [render.com](https://render.com).
+2. Render automatically detects the root [`render.yaml`](./render.yaml) configuration.
+3. Your backend will be deployed with healthcheck `/health`.
 
 ---
 
