@@ -211,7 +211,7 @@ export const InterviewRoom: React.FC = () => {
     }
   };
 
-  const currentQ: Question | undefined = session?.questions[session?.currentQuestionIndex || 0];
+  const currentQ: Question | undefined = session?.questions?.[session?.currentQuestionIndex || 0] || session?.questions?.[0];
   const roundTypeLabel = (session?.roundType || 'technical').replace('_', ' ').toUpperCase();
 
   return (
