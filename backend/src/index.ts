@@ -21,6 +21,25 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Root status endpoint
+app.get('/', (req, res) => {
+  res.json({
+    status: 'online',
+    service: 'PrepPulse - Multi-Level Technical Interview Platform API',
+    author: 'Ankit Kumar Mishra',
+    frontendUrl: 'http://localhost:3000',
+    repository: 'https://github.com/mishraankit77/ai-interview-platform',
+    endpoints: {
+      health: '/health',
+      roles: '/api/interview/roles',
+      startInterview: 'POST /api/interview/start',
+      submitAnswer: 'POST /api/interview/:id/answer',
+      getSession: 'GET /api/interview/:id',
+      getReport: 'GET /api/interview/:id/report'
+    }
+  });
+});
+
 // Healthcheck & metadata endpoint
 app.get('/health', (req, res) => {
   res.json({
