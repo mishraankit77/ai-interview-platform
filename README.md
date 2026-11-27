@@ -1,6 +1,12 @@
 # ⚡ PrepPulse — Multi-Level Technical Interview Platform
 
+> **Try it live — no install needed:** https://mishraankit77.github.io/ai-interview-platform
+>
+> Pick a round, answer timed questions with the Indian English (en-IN) voice, and get a strict 0–100 scorecard with a hiring verdict.
+
 PrepPulse is a high-performance interview preparation and candidate evaluation platform designed for modern software engineering hiring loops. It simulates realistic interview rounds with speech-to-text dictation, live coding with test cases, Indian English interviewer voice synthesis, real-time response countdown timers, and strict, rubric-based candidate evaluations.
+
+**Built by:** Ankit Kumar Mishra — Full Stack Developer (React, TypeScript, FastAPI, Node.js), Software Developer Trainee at SurePath Labs, Delhi · [GitHub](https://github.com/mishraankit77) · [LinkedIn](https://linkedin.com/in/ankit-kumar-mishra-dev)
 
 ---
 
@@ -16,6 +22,14 @@ PrepPulse is a high-performance interview preparation and candidate evaluation p
 - **Countdown Timers**: Per-question timed intervals with visual urgency states (green → yellow → pulsing red under 30s) and auto-submit triggers.
 - **Dark & Light Mode**: Seamless theme switching between pure light mode (`#ffffff`) and true dark mode (`#000000`).
 - **Comprehensive Audit Report**: Detailed post-interview scorecard featuring competency progress metrics, hiring verdict (`Strong Hire`, `Hire`, `Lean Hire`, `No Hire`), strengths, and actionable improvements.
+
+## How it works
+
+1. Choose one of the 4 interview rounds on the live demo.
+2. Answer timed questions — code in the in-browser editor for Level 1, speak/type for the rest.
+3. Get a 5-axis competency score (0–100), a hiring verdict, technical gaps, and ideal answers.
+
+The static live demo runs in the browser with a built-in question bank and local session persistence. The full backend (Node.js / Express + LLM evaluation) lives in `/backend`.
 
 ---
 
@@ -83,7 +97,7 @@ Press `Ctrl + Shift + B` and select **`Run Entire Project (Backend + Frontend)`*
 
 ## 👤 Author
 
-**Ankit Kumar Mishra**  
-- GitHub: [@mishraankit77](https://github.com/mishraankit77)  
-- Email: mishra1010a@gmail.com  
+**Ankit Kumar Mishra**
+- GitHub: [@mishraankit77](https://github.com/mishraankit77)
+- Email: mishra1010a@gmail.com
 - Role: Software Developer / Full Stack Developer
