@@ -1,6 +1,6 @@
 # ⚡ PrepPulse — Multi-Level Technical Interview Platform
 
-> **Try it live — no install needed:** https://mishraankit77.github.io/ai-interview-platform
+> **Try it live — no install needed:** https://mishraankit77.github.io/PrepPulse
 >
 > Pick a round, answer timed questions with the Indian English (en-IN) voice, and get a strict 0–100 scorecard with a hiring verdict.
 
@@ -50,7 +50,7 @@ The static live demo runs in the browser with a built-in question bank and local
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/mishraankit77/ai-interview-platform.git
+git clone https://github.com/mishraankit77/PrepPulse.git
 cd ai-interview-platform
 npm run install:all
 ```
@@ -81,7 +81,7 @@ Press `Ctrl + Shift + B` and select **`Run Entire Project (Backend + Frontend)`*
 | Service | Tier | Deploy Action |
 |:---|:---|:---|
 | **Frontend (Vercel)** | 100% Free Forever | [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmishraankit77%2Fai-interview-platform&root-directory=frontend) |
-| **Backend (Render)** | Free Tier Web Service | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/mishraankit77/ai-interview-platform) |
+| **Backend (Render)** | Free Tier Web Service | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/mishraankit77/PrepPulse) |
 
 ### Frontend (Vercel)
 1. Click the **Deploy with Vercel** button above or import `mishraankit77/ai-interview-platform` at [vercel.com](https://vercel.com).
